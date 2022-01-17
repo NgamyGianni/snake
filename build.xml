@@ -3,7 +3,6 @@
   <description> The build file for the coffee break </description>
   <property name="src" location="src"/>
   <property name="build" location="beans"/>
-  <property name="toto" location="D:\Ashanth\Téléchargements\javafx-sdk-13\lib"/>
   <property environment="env" />
   <target name="init">
     <tstamp/>
@@ -11,13 +10,13 @@
   </target>
   <target name="compile" depends="clean,init" description="Compile the source">
     <javac includeantruntime="false" debug="true" srcdir="${src}" excludes="" destdir="${build}">
-      <compilerarg line="--module-path ${toto} --add-modules javafx.controls,javafx.media"/>
+      <compilerarg line="--module-path ${env.JAVAFX} --add-modules javafx.controls,javafx.media"/>
     </javac>
   </target>
   <target name="run" depends="compile" description="Run application">
     <echo>================ Run Object Main ================</echo>
     <java classname="alpha.Main" classpath="${build}/" fork="true">
-      <jvmarg line="--module-path ${toto} --add-modules javafx.controls,javafx.media"/>
+      <jvmarg line="--module-path ${env.JAVAFX} --add-modules javafx.controls,javafx.media"/>
     </java>
   </target>
   <target name="dist" depends="init,clean" description="Archive">
