@@ -11,6 +11,7 @@ import tools.HardCodedParameters;
 import specifications.ViewerService;
 import specifications.ReadService;
 import specifications.RequireReadService;
+import specifications.AppleService;
 import specifications.PhantomService;
 
 import javafx.scene.Group;
@@ -137,6 +138,9 @@ public class Viewer implements ViewerService, RequireReadService{
 
     ArrayList<PhantomService> phantoms = data.getPhantoms();
     PhantomService p;
+    
+    ArrayList<AppleService> apples = data.getApples();
+    AppleService se;
 
     for (int i=0; i<phantoms.size();i++){
       p=phantoms.get(i);
@@ -147,6 +151,16 @@ public class Viewer implements ViewerService, RequireReadService{
       phantomAvatar.setTranslateY(shrink*p.getPosition().y+shrink*yModifier-radius);
       panel.getChildren().add(phantomAvatar);
     }
+    
+    for (int i=0; i<apples.size();i++){
+        se=apples.get(i);
+        double radius=.5*Math.min(shrink*data.getAppleWidth(),shrink*data.getAppleHeight());
+        Circle appleAvatar = new Circle(radius,Color.rgb(255,0,0));
+        appleAvatar.setEffect(new Lighting());
+        appleAvatar.setTranslateX(shrink*se.getPosition().x+shrink*xModifier-radius);
+        appleAvatar.setTranslateY(shrink*se.getPosition().y+shrink*yModifier-radius);
+        panel.getChildren().add(appleAvatar);
+      }
 
     return panel;
   }

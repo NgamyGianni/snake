@@ -18,4 +18,6 @@ public interface WriteService {
   public void setPhantoms(ArrayList<PhantomService> phantoms);
   public void setSoundEffect(Sound.SOUND s);
   public void addScore(int score);
+  public void addApple(Position p);
+  public void setApple(ArrayList<AppleService> apple);
 }

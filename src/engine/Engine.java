@@ -12,6 +12,7 @@ import tools.Position;
 import tools.Sound;
 
 import specifications.EngineService;
+import specifications.AppleService;
 import specifications.DataService;
 import specifications.RequireDataService;
 import specifications.PhantomService;
@@ -59,13 +60,27 @@ public class Engine implements EngineService, RequireDataService{
         //System.out.println("Game step #"+data.getStepNumber()+": checked.");
         
         if (gen.nextInt(10)<3) spawnPhantom();
+        if (data.getApples().isEmpty()) spawnApple();
+
 
         updateSpeedHeroes();
         updateCommandHeroes();
         updatePositionHeroes();
 
         ArrayList<PhantomService> phantoms = new ArrayList<PhantomService>();
+        ArrayList<AppleService> apples = new ArrayList<AppleService>();
+
         int score=0;
+
+        for (AppleService a:data.getApples()) {
+            if (collisionSnakeApple(a)){
+                data.setSoundEffect(Sound.SOUND.HeroesGotHit);
+                //Position newSnakePart = new Position(x, y);
+                score+=10;
+              } else {
+                if (a.getPosition().x>0) apples.add(a);
+              }
+        }
 
         data.setSoundEffect(Sound.SOUND.None);
 
@@ -86,6 +101,9 @@ public class Engine implements EngineService, RequireDataService{
         data.addScore(score);
 
         data.setPhantoms(phantoms);
+        
+        data.setApple(apples);
+
 
         data.setStepNumber(data.getStepNumber()+1);
       }
@@ -166,6 +184,22 @@ public class Engine implements EngineService, RequireDataService{
     }
     data.addPhantom(new Position(x,y));
   }
+  
+  private void spawnApple(){
+	  
+	    int x=0;
+	    int y=0;
+	    boolean cont=true;
+	    while (cont) {
+	      y=(int)(gen.nextInt((int)(HardCodedParameters.defaultHeight*.6))+HardCodedParameters.defaultHeight*.1);
+	      x=(int)(gen.nextInt((int)(HardCodedParameters.defaultWidth*.8))+HardCodedParameters.defaultWidth*0.1);
+	      cont=false;
+	      for (AppleService p:data.getApples()){
+	        if (p.getPosition().equals(new Position(x,y))) cont=true;
+	      }
+	    }
+	    data.addApple(new Position(x,y));
+	  }
 
   private void moveLeft(PhantomService p){	
 	  p.setPosition(new Position(p.getPosition().x-phantomStep,p.getPosition().y));
@@ -191,7 +225,19 @@ public class Engine implements EngineService, RequireDataService{
     );
   }
   
+  private boolean collisionSnakeApple(AppleService se){
+	    return (
+	      (data.getHeroesPosition().x-se.getPosition().x)*(data.getHeroesPosition().x-se.getPosition().x)+
+	      (data.getHeroesPosition().y-se.getPosition().y)*(data.getHeroesPosition().y-se.getPosition().y) <
+	      0.25*(data.getHeroesWidth()+data.getAppleWidth())*(data.getHeroesWidth()+data.getAppleWidth())
+	    );
+	  }
+  
   private boolean collisionHeroesPhantoms(){
     for (PhantomService p:data.getPhantoms()) if (collisionHeroesPhantom(p)) return true; return false;
   }
+  
+  private boolean collisionHeroesApples(){
+	    for (AppleService se:data.getApples()) if (collisionSnakeApple(se)) return true; return false;
+	  }
 }

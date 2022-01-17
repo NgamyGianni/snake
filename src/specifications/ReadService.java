@@ -17,8 +17,11 @@ public interface ReadService {
   public double getHeroesHeight();
   public double getPhantomWidth();
   public double getPhantomHeight();
+  public double getAppleWidth();
+  public double getAppleHeight();
   public int getStepNumber();
   public int getScore();
   public ArrayList<PhantomService> getPhantoms();
+  public ArrayList<AppleService> getApples();
   public Sound.SOUND getSoundEffect();
 }
