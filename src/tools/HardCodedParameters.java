@@ -1,8 +1,5 @@
 /* ******************************************************
- * Project alpha - Composants logiciels 2015.
- * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
- * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: tools/HardCodedParameters.java 2015-03-11 buixuan.
+ * Project Snake - Ashanth CHANDRAMOHAN
  * ******************************************************/
 package tools;
 
@@ -10,8 +7,8 @@ public class HardCodedParameters {
   //---HARD-CODED-PARAMETERS---//
   public static String defaultParamFileName = "in.parameters";
   public static final int defaultWidth = 840, defaultHeight = 600,
-                          heroesStartX = 80, heroesStartY = 320, heroesWidth=40, heroesHeight=40, heroesStep = 40, snakeStep=40,
-                          phantomWidth = 40, phantomHeight = 40, phantomStep = 40, motionlessEnemyWidth = 30, motionlessEnemyHeight = 30, motionlessEnemyStep = 10;
+                          snakeStartX = 80, snakeStartY = 320, snakeWidth=40, snakeHeight=40, SnakeStep = 40, snakeStep=40,
+                        		  appleWidth=40, appleHeight=40,wallWidth=40, wallHeight=40;
   public static final int enginePaceMillis = 100,unitSize=40,
                           spriteSlowDownRate = 7;
   public static final double friction = 0.25;

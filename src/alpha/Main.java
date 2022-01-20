@@ -1,8 +1,5 @@
 /* ******************************************************
- * Project alpha - Composants logiciels 2015.
- * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
- * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: alpha/Main.java 2015-03-11 buixuan.
+ * Project Snake - Ashanth CHANDRAMOHAN
  * ******************************************************/
 package alpha;
 
@@ -70,20 +67,20 @@ public class Main extends Application{
     scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
       @Override
         public void handle(KeyEvent event) {
-          if (event.getCode()==KeyCode.LEFT) engine.setHeroesCommand(User.COMMAND.LEFT);
-          if (event.getCode()==KeyCode.RIGHT) engine.setHeroesCommand(User.COMMAND.RIGHT);
-          if (event.getCode()==KeyCode.UP) engine.setHeroesCommand(User.COMMAND.UP);
-          if (event.getCode()==KeyCode.DOWN) engine.setHeroesCommand(User.COMMAND.DOWN);
+          if (event.getCode()==KeyCode.LEFT) engine.setSnakeCommand(User.COMMAND.LEFT);
+          if (event.getCode()==KeyCode.RIGHT) engine.setSnakeCommand(User.COMMAND.RIGHT);
+          if (event.getCode()==KeyCode.UP) engine.setSnakeCommand(User.COMMAND.UP);
+          if (event.getCode()==KeyCode.DOWN) engine.setSnakeCommand(User.COMMAND.DOWN);
           event.consume();
         }
     });
     scene.setOnKeyReleased(new EventHandler<KeyEvent>(){
       @Override
         public void handle(KeyEvent event) {
-          if (event.getCode()==KeyCode.LEFT) engine.releaseHeroesCommand(User.COMMAND.LEFT);
-          if (event.getCode()==KeyCode.RIGHT) engine.releaseHeroesCommand(User.COMMAND.RIGHT);
-          if (event.getCode()==KeyCode.UP) engine.releaseHeroesCommand(User.COMMAND.UP);
-          if (event.getCode()==KeyCode.DOWN) engine.releaseHeroesCommand(User.COMMAND.DOWN);
+          if (event.getCode()==KeyCode.LEFT) engine.releaseSnakeCommand(User.COMMAND.LEFT);
+          if (event.getCode()==KeyCode.RIGHT) engine.releaseSnakeCommand(User.COMMAND.RIGHT);
+          if (event.getCode()==KeyCode.UP) engine.releaseSnakeCommand(User.COMMAND.UP);
+          if (event.getCode()==KeyCode.DOWN) engine.releaseSnakeCommand(User.COMMAND.DOWN);
           event.consume();
         }
     });

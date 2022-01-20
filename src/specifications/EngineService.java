@@ -1,8 +1,5 @@
 /* ******************************************************
- * Project alpha - Composants logiciels 2015.
- * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
- * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: specifications/EngineService.java 2015-03-11 buixuan.
+ * Project Snake - Ashanth CHANDRAMOHAN
  * ******************************************************/
 package specifications;
 
@@ -12,6 +9,6 @@ public interface EngineService{
   public void init();
   public void start();
   public void stop();
-  public void setHeroesCommand(User.COMMAND c);
-  public void releaseHeroesCommand(User.COMMAND c);
+  public void setSnakeCommand(User.COMMAND c);
+  public void releaseSnakeCommand(User.COMMAND c);
 }

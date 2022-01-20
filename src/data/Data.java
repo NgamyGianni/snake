@@ -1,8 +1,5 @@
 /* ******************************************************
- * Project alpha - Composants logiciels 2015.
- * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
- * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: data/Data.java 2015-03-11 buixuan.
+ * Project Snake - Ashanth CHANDRAMOHAN
  * ******************************************************/
 package data;
 
@@ -11,11 +8,8 @@ import tools.Position;
 import tools.Sound;
 import specifications.AppleService;
 import specifications.DataService;
-import specifications.PhantomService;
 import specifications.SnakeService;
-import specifications.MotionlessService;
 import specifications.ObstacleService;
-import data.ia.MoveLeftPhantom;
 import data.ia.PoisonousApple;
 import data.ia.SnakePart;
 import data.ia.Wall;
@@ -25,10 +19,8 @@ import data.ia.HealthyApple;
 import java.util.ArrayList;
 
 public class Data implements DataService{
-  //private Heroes hercules;
-  private Position heroesPosition;
+  private Position snakeHeadPosition;
   private int stepNumber, score,round;
-  private ArrayList<PhantomService> phantoms;
   private ArrayList<ObstacleService> walls;
   private ArrayList<AppleService> apple;
   private ArrayList<AppleService> poisonousApple;
@@ -36,7 +28,7 @@ public class Data implements DataService{
   
 
   private ArrayList<SnakeService> snakeParts;
-  private double heroesWidth,heroesHeight,phantomWidth,phantomHeight,appleWidth,appleHeight;
+  private double snakeWidth,snakeHeight,appleWidth,appleHeight;
   private Sound.SOUND sound;
   private boolean running;
 
@@ -44,12 +36,10 @@ public class Data implements DataService{
 
   @Override
   public void init(){
-    //hercules = new Heroes;
-    heroesPosition = new Position(HardCodedParameters.heroesStartX,HardCodedParameters.heroesStartY);
-    phantoms = new ArrayList<PhantomService>();
+    snakeHeadPosition = new Position(HardCodedParameters.snakeStartX,HardCodedParameters.snakeStartY);
     walls = new ArrayList<ObstacleService>();
     snakeParts = new ArrayList<SnakeService>();
-    snakeParts.add(new SnakePart(heroesPosition));
+    snakeParts.add(new SnakePart(snakeHeadPosition));
     stepNumber = 0;
     score = 0;
     apple = new ArrayList<AppleService>();
@@ -57,30 +47,22 @@ public class Data implements DataService{
     healthyApple = new HealthyApple(null); 
     running= true;
     round = 1;
-    heroesWidth = HardCodedParameters.heroesWidth;
-    heroesHeight = HardCodedParameters.heroesHeight;
-    phantomWidth = HardCodedParameters.phantomWidth;
-    phantomHeight = HardCodedParameters.phantomHeight;
-    appleWidth = HardCodedParameters.phantomWidth;
-    appleHeight = HardCodedParameters.phantomHeight;
+    snakeWidth = HardCodedParameters.snakeWidth;
+    snakeHeight = HardCodedParameters.snakeHeight;
+    appleWidth = HardCodedParameters.appleWidth;
+    appleHeight = HardCodedParameters.appleHeight;
     
     sound = Sound.SOUND.None;
   }
 
   @Override
-  public Position getHeroesPosition(){ return heroesPosition; }
+  public Position getSnakeHeadPosition(){ return snakeHeadPosition; }
   
   @Override
-  public double getHeroesWidth(){ return heroesWidth; }
+  public double getSnakeWidth(){ return snakeWidth; }
   
   @Override
-  public double getHeroesHeight(){ return heroesHeight; }
-  
-  @Override
-  public double getPhantomWidth(){ return phantomWidth; }
-  
-  @Override
-  public double getPhantomHeight(){ return phantomHeight; }
+  public double getSnakeHeight(){ return snakeHeight; }
   
   @Override
   public double getAppleHeight(){ return appleHeight; }
@@ -99,9 +81,6 @@ public class Data implements DataService{
   
   @Override
   public boolean getRunning(){ return running; }
-
-  @Override
-  public ArrayList<PhantomService> getPhantoms(){ return phantoms; }
   
   @Override
   public ArrayList<AppleService> getApples(){ return apple; }
@@ -113,7 +92,7 @@ public class Data implements DataService{
   public Sound.SOUND getSoundEffect() { return sound; }
 
   @Override
-  public void setHeroesPosition(Position p) { heroesPosition=p; }
+  public void setSnakeHeadPosition(Position p) { snakeHeadPosition=p; }
   
   @Override
   public void setSnakePartPosition(int index,Position p) { this.snakeParts.set(index, new SnakePart(p)); }
@@ -123,9 +102,6 @@ public class Data implements DataService{
   
   @Override
   public void setRunning(boolean running){ this.running=running; }
-  
-  @Override
-  public void setPhantoms(ArrayList<PhantomService> phantoms) { this.phantoms=phantoms; }
   
   @Override
   public void setSoundEffect(Sound.SOUND s) { sound=s; }
@@ -138,9 +114,6 @@ public class Data implements DataService{
   
   @Override
   public void addScore(int score){ this.score+=score; }
-
-  @Override
-  public void addPhantom(Position p) { phantoms.add(new MoveLeftPhantom(p)); }
   
   @Override
   public void addApple(Position p) {apple.add(new Apple(p)); }
@@ -152,50 +125,27 @@ public class Data implements DataService{
   public void addRound(int n){ this.round+=n; }
 
 @Override
-public ArrayList<AppleService> getPoisonousApples() {
-	// TODO Auto-generated method stub
-	return poisonousApple;
-}
+public ArrayList<AppleService> getPoisonousApples() { return poisonousApple; }
 
 @Override
-public AppleService getHealthyApples() {
-	// TODO Auto-generated method stub
-	return healthyApple;
-}
+public AppleService getHealthyApples() { return healthyApple; }
 
 @Override
-public void addPoisonousApple(Position p) {
-	// TODO Auto-generated method stub
-	this.poisonousApple.add(new PoisonousApple(p));
-}
+public void addPoisonousApple(Position p) { this.poisonousApple.add(new PoisonousApple(p)); }
 
 @Override
-public void setPoisonousApple(ArrayList<AppleService> apple) {
-	this.poisonousApple=apple;	
-}
+public void setPoisonousApple(ArrayList<AppleService> apple) { this.poisonousApple=apple; }
 
 @Override
-public void setHealthyApple(Position p) {
-	// TODO Auto-generated method stub
-	this.healthyApple=new HealthyApple(p);
-}
+public void setHealthyApple(Position p) { this.healthyApple=new HealthyApple(p); }
 
 @Override
-public ArrayList<ObstacleService> getWalls() {
-	// TODO Auto-generated method stub
-	return this.walls;
-}
+public ArrayList<ObstacleService> getWalls() { return this.walls; }
 
 @Override
-public void addWall(Position p) {
-	// TODO Auto-generated method stub
-	this.walls.add(new Wall(p));
-}
+public void addWall(Position p) { this.walls.add(new Wall(p)); }
 
 @Override
-public void setWalls(ArrayList<ObstacleService> walls) {
-	// TODO Auto-generated method stub
-	this.walls=walls;
-}
-  
+public void setWalls(ArrayList<ObstacleService> walls) { this.walls=walls; }
+
 }

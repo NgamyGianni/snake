@@ -1,8 +1,5 @@
 /* ******************************************************
- * Project alpha - Composants logiciels 2015.
- * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
- * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: tools/Position.java 2015-03-11 buixuan.
+ * Project Snake - Ashanth CHANDRAMOHAN
  * ******************************************************/
 package tools;
 
@@ -15,5 +12,5 @@ public class Position {
 @Override
 public String toString() {
 	return "Position [x=" + x + ", y=" + y + "]";
-}
+  }
 }

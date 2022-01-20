@@ -1,8 +1,5 @@
 /* ******************************************************
- * Project alpha - Composants logiciels 2015.
- * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
- * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: userInterface/Viewer.java 2015-03-11 buixuan.
+ * Project Snake - Ashanth CHANDRAMOHAN
  * ******************************************************/
 package userInterface;
 
@@ -14,7 +11,6 @@ import specifications.RequireReadService;
 import specifications.SnakeService;
 import specifications.AppleService;
 import specifications.ObstacleService;
-import specifications.PhantomService;
 
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -37,12 +33,10 @@ public class Viewer implements ViewerService, RequireReadService{
   private static final double defaultMainWidth=HardCodedParameters.defaultWidth,
                               defaultMainHeight=HardCodedParameters.defaultHeight;
   private ReadService data;
-  private ImageView heroesAvatar;
-  private Image heroesSpriteSheet;
-  private ArrayList<Rectangle2D> heroesAvatarViewports;
+  private ArrayList<Rectangle2D> snakeAvatarViewports;
   private ArrayList<Integer> heroesAvatarXModifiers;
   private ArrayList<Integer> heroesAvatarYModifiers;
-  private int heroesAvatarViewportIndex;
+  private int snakeAvatarViewportIndex;
   private double xShrink,yShrink,shrink,xModifier,yModifier,heroesScale;
 
   public Viewer(){}
@@ -58,38 +52,6 @@ public class Viewer implements ViewerService, RequireReadService{
     yShrink=1;
     xModifier=0;
     yModifier=0;
-
-    //Yucky hard-conding
-    heroesSpriteSheet = new Image("file:src/images/modern soldier large.png");
-    heroesAvatar = new ImageView(heroesSpriteSheet);
-    heroesAvatarViewports = new ArrayList<Rectangle2D>();
-    heroesAvatarXModifiers = new ArrayList<Integer>();
-    heroesAvatarYModifiers = new ArrayList<Integer>();
-
-    heroesAvatarViewportIndex=0;
-    
-    //TODO: replace the following with XML loader
-    //heroesAvatarViewports.add(new Rectangle2D(301,386,95,192));
-    heroesAvatarViewports.add(new Rectangle2D(570,194,115,190));
-    heroesAvatarViewports.add(new Rectangle2D(398,386,133,192));
-    heroesAvatarViewports.add(new Rectangle2D(155,194,147,190));
-    heroesAvatarViewports.add(new Rectangle2D(785,386,127,194));
-    heroesAvatarViewports.add(new Rectangle2D(127,582,135,198));
-    heroesAvatarViewports.add(new Rectangle2D(264,582,111,200));
-    heroesAvatarViewports.add(new Rectangle2D(2,582,123,198));
-    heroesAvatarViewports.add(new Rectangle2D(533,386,115,192));
-    //heroesAvatarViewports.add(new Rectangle2D(204,386,95,192));
-
-    //heroesAvatarXModifiers.add(10);heroesAvatarYModifiers.add(-7);
-    heroesAvatarXModifiers.add(6);heroesAvatarYModifiers.add(-6);
-    heroesAvatarXModifiers.add(2);heroesAvatarYModifiers.add(-8);
-    heroesAvatarXModifiers.add(1);heroesAvatarYModifiers.add(-10);
-    heroesAvatarXModifiers.add(1);heroesAvatarYModifiers.add(-13);
-    heroesAvatarXModifiers.add(5);heroesAvatarYModifiers.add(-15);
-    heroesAvatarXModifiers.add(5);heroesAvatarYModifiers.add(-13);
-    heroesAvatarXModifiers.add(0);heroesAvatarYModifiers.add(-9);
-    heroesAvatarXModifiers.add(0);heroesAvatarYModifiers.add(-6);
-    //heroesAvatarXModifiers.add(10);heroesAvatarYModifiers.add(-7);
     
   }
 
@@ -104,7 +66,6 @@ public class Viewer implements ViewerService, RequireReadService{
     map.setFill(Color.WHITE);
     map.setStroke(Color.DIMGRAY);
     map.setStrokeWidth(.01*shrink*defaultMainHeight);
-//    map.setArcWidth(.04*shrink*defaultMainHeight);
     map.setArcHeight(.04*shrink*defaultMainHeight);
     map.setTranslateX(xModifier);
     map.setTranslateY(yModifier);
@@ -128,9 +89,6 @@ public class Viewer implements ViewerService, RequireReadService{
     Group panel = new Group();
     panel.getChildren().addAll(map,score,level,snakePartsCount);
 
-    ArrayList<PhantomService> phantoms = data.getPhantoms();
-    PhantomService p;
-    
     ArrayList<AppleService> apples = data.getApples();
     AppleService apl;
     
@@ -144,40 +102,31 @@ public class Viewer implements ViewerService, RequireReadService{
     
     ArrayList<ObstacleService> walls = data.getWalls();
     ObstacleService wall;
-    /*for (int i=0; i<phantoms.size();i++){
-      p=phantoms.get(i);
-      double radius=.5*Math.min(shrink*data.getPhantomWidth(),shrink*data.getPhantomHeight());
-      Circle phantomAvatar = new Circle(radius,Color.rgb(255,156,156));
-      phantomAvatar.setEffect(new Lighting());
-      phantomAvatar.setTranslateX(shrink*p.getPosition().x+shrink*xModifier-radius);
-      phantomAvatar.setTranslateY(shrink*p.getPosition().y+shrink*yModifier-radius);
-      panel.getChildren().add(phantomAvatar);
-    }*/
     
     for (SnakeService snakeService : snakeParts) {
 		sp = snakeService;
-		Rectangle snakeAvatar =  new Rectangle(data.getHeroesWidth()*shrink,data.getHeroesHeight()*shrink,Color.DARKGREEN);
+		Rectangle snakeAvatar =  new Rectangle(data.getSnakeWidth()*shrink,data.getSnakeHeight()*shrink,Color.DARKGREEN);
 	    snakeAvatar.setTranslateX(shrink*sp.getPosition().x+
                 shrink*xModifier+
-                heroesScale*data.getHeroesWidth()
+                heroesScale*data.getSnakeWidth()
                );
 	    snakeAvatar.setTranslateY(shrink*sp.getPosition().y+
                 shrink*yModifier+
-                heroesScale*data.getHeroesHeight()
+                heroesScale*data.getSnakeHeight()
                );
 	      panel.getChildren().add(snakeAvatar);
 
 	}
     for (int i=0; i<walls.size();i++){
 		wall = walls.get(i);
-		Rectangle wallAvatar =  new Rectangle(data.getHeroesWidth()*shrink,data.getHeroesHeight()*shrink,Color.rgb(150, 75, 0));
+		Rectangle wallAvatar =  new Rectangle(data.getSnakeWidth()*shrink,data.getSnakeHeight()*shrink,Color.rgb(150, 75, 0));
 	    wallAvatar.setTranslateX(shrink*wall.getPosition().x+
                 shrink*xModifier+
-                heroesScale*data.getHeroesWidth()
+                heroesScale*data.getSnakeWidth()
                );
 	    wallAvatar.setTranslateY(shrink*wall.getPosition().y+
                 shrink*yModifier+
-                heroesScale*data.getHeroesHeight()
+                heroesScale*data.getSnakeHeight()
                );
 	      panel.getChildren().add(wallAvatar);
 
