@@ -9,12 +9,12 @@ package tools;
 public class HardCodedParameters {
   //---HARD-CODED-PARAMETERS---//
   public static String defaultParamFileName = "in.parameters";
-  public static final int defaultWidth = 800, defaultHeight = 600,
-                          heroesStartX = 80, heroesStartY = 200, heroesWidth=60, heroesHeight=90, heroesStep = 10,
-                          phantomWidth = 30, phantomHeight = 30, phantomStep = 10, motionlessEnemyWidth = 30, motionlessEnemyHeight = 30, motionlessEnemyStep = 10;
-  public static final int enginePaceMillis = 100,
+  public static final int defaultWidth = 840, defaultHeight = 600,
+                          heroesStartX = 80, heroesStartY = 320, heroesWidth=40, heroesHeight=40, heroesStep = 40, snakeStep=40,
+                          phantomWidth = 40, phantomHeight = 40, phantomStep = 40, motionlessEnemyWidth = 30, motionlessEnemyHeight = 30, motionlessEnemyStep = 10;
+  public static final int enginePaceMillis = 100,unitSize=40,
                           spriteSlowDownRate = 7;
-  public static final double friction = 0.50;
+  public static final double friction = 0.25;
   public static final double resolutionShrinkFactor = 0.95,
                              userBarShrinkFactor = 0.25,
                              menuBarShrinkFactor = 0.5,
