@@ -1,8 +1,5 @@
 /* ******************************************************
- * Project alpha - Composants logiciels 2015.
- * Copyright (C) 2015 <Binh-Minh.Bui-Xuan@ens-lyon.org>.
- * GPL version>=3 <http://www.gnu.org/licenses/>.
- * $Id: engine/Engine.java 2015-03-11 buixuan.
+ * Project Snake - Ashanth CHANDRAMOHAN
  * ******************************************************/
 package engine;
 
@@ -17,7 +14,6 @@ import specifications.AppleService;
 import specifications.DataService;
 import specifications.RequireDataService;
 import specifications.SnakeService;
-import specifications.PhantomService;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,14 +26,14 @@ import java.util.ArrayList;
 
 public class Engine implements EngineService, RequireDataService{
   private static final double friction=HardCodedParameters.friction,
-                              heroesStep=HardCodedParameters.heroesStep,
-                              phantomStep=HardCodedParameters.phantomStep;
+                              snakeStep=HardCodedParameters.SnakeStep;
+  
   private Timer engineClock;
   private DataService data;
   private User.COMMAND command;
   private Random gen;
   private boolean moveLeft,moveRight,moveUp,moveDown,running;
-  private double heroesVX,heroesVY;
+  private double snakeVX,snakeVY;
   ArrayList<SnakeService> snakeParts;
 
   public Engine(){}
@@ -56,8 +52,8 @@ public class Engine implements EngineService, RequireDataService{
     moveRight = false;
     moveUp = false;
     moveDown = false;
-    heroesVX = 0;
-    heroesVY = 0;
+    snakeVX = 0;
+    snakeVY = 0;
     
   }
 
@@ -66,27 +62,19 @@ public class Engine implements EngineService, RequireDataService{
     engineClock.schedule(new TimerTask(){
       public void run() {
     	  
-    	  running = data.getRunning();
-//        if (gen.nextInt(10)<3) spawnPhantom();
-    	  
-          if(data.getRound()==3) {
-              createWall();
-           }
-        if (data.getApples().isEmpty()) spawnApple();
-        snakeParts = data.getSnakeParts();
-
-        if(data.getRound()>=2) {
+    	  running = data.getRunning();    	  
+          if(data.getRound()==3) createWall();
+          if (data.getApples().isEmpty()) spawnApple();
+          snakeParts = data.getSnakeParts();
+          if(data.getRound()>=2) {
             if (data.getPoisonousApples().isEmpty()) spawnPoisonousApple();
 //            if (data.getHealthyApples()==null) spawnHealthyApple();
-        }
+          }
         
-        
-        int score=0;
-//        updateSpeedHeroes();
-        
-        updateCommandHeroes();
+        int score=0;        
+        updateCommandSnake();
         updatePositionSnakeParts();
-        ArrayList<PhantomService> phantoms = new ArrayList<PhantomService>();
+        
         ArrayList<AppleService> apples = new ArrayList<AppleService>();
         AppleService healtyapple = data.getHealthyApples();
         ArrayList<AppleService> poisonousApples = new ArrayList<AppleService>();
@@ -98,7 +86,6 @@ public class Engine implements EngineService, RequireDataService{
             if (collisionSnakeApple(a)){
                 data.setSoundEffect(Sound.SOUND.HeroesGotHit);
                 addNewPart();
-                //Position newSnakePart = new Position(x, y);
                 score+=10;
               } else {
                 if (a.getPosition().x>0) apples.add(a);
@@ -109,7 +96,6 @@ public class Engine implements EngineService, RequireDataService{
             if (collisionSnakeApple(a)){
                 data.setSoundEffect(Sound.SOUND.HeroesGotHit);
                 removeLastPart();
-                //Position newSnakePart = new Position(x, y);
                 score=-15;
               } else {
                 if (a.getPosition().x>0) poisonousApples.add(a);
@@ -117,37 +103,16 @@ public class Engine implements EngineService, RequireDataService{
         }
         snakeParts = data.getSnakeParts();
 
-
         data.setSoundEffect(Sound.SOUND.None);
 
-        for (PhantomService p:data.getPhantoms()){
-          if (p.getAction()==PhantomService.MOVE.LEFT) moveLeft(p);
-          if (p.getAction()==PhantomService.MOVE.RIGHT) moveRight(p);
-          if (p.getAction()==PhantomService.MOVE.UP) moveUp(p);
-          if (p.getAction()==PhantomService.MOVE.DOWN) moveDown(p);
-
-          if (collisionHeroesPhantom(p)){
-            data.setSoundEffect(Sound.SOUND.HeroesGotHit);
-            score++;
-          } else {
-            if (p.getPosition().x>0) phantoms.add(p);
-          }
-        }
-        	levelUp();
-
+        levelUp();
 
         data.addScore(score);
-
-        data.setPhantoms(phantoms);
-        
         data.setApple(apples);
         data.setPoisonousApple(poisonousApples);
 //        data.setHealthyApple(healtyapple.getPosition());
-
         data.setSnakeParts(snakeParts);
-        
         data.setWalls(walls);
-
         data.setStepNumber(data.getStepNumber()+1);
         
         if(collisionSnakeHeadSnake()) {
@@ -156,7 +121,9 @@ public class Engine implements EngineService, RequireDataService{
         else if (collisionSnakeWalls()) {
         	running = false;
         }
+        
         data.setRunning(running);
+        
         if(!running) {
         	stop();
         }
@@ -173,7 +140,6 @@ public class Engine implements EngineService, RequireDataService{
           if (collisionSnakeApple(a)){
               data.setSoundEffect(Sound.SOUND.HeroesGotHit);
               addNewPart();
-              //Position newSnakePart = new Position(x, y);
               score+=10;
             } else {
               if (a.getPosition().x>0) apples.add(a);
@@ -181,25 +147,24 @@ public class Engine implements EngineService, RequireDataService{
       }
 	  }
 	  if(!poisonousApples.isEmpty()) {
-      for (AppleService a:poisonousApples) {
-          if (collisionSnakeApple(a)){
-              data.setSoundEffect(Sound.SOUND.HeroesGotHit);
-              removeLastPart();
-              //Position newSnakePart = new Position(x, y);
-              score-=5;
-            } else {
-              if (a.getPosition().x>0) poisonousApples.add(a);
-            }
-      }
-	  }
-	
+	      for (AppleService a:poisonousApples) {
+	          if (collisionSnakeApple(a)){
+	              data.setSoundEffect(Sound.SOUND.HeroesGotHit);
+	              removeLastPart();
+	              score-=5;
+	            } 
+	          else {
+	              if (a.getPosition().x>0) poisonousApples.add(a);
+	          }
+	     }
+	 }
 }
 
   private void levelUp() {
       if (data.getScore()>=50 && data.getRound()==1) {
     	  data.addRound(1);
       }
-      if (data.getScore()>=60 && data.getRound()==2) {
+      if (data.getScore()>=100 && data.getRound()==2) {
     	  data.addRound(1);
       }
 }
@@ -210,7 +175,7 @@ public class Engine implements EngineService, RequireDataService{
   }
 
   @Override
-  public void setHeroesCommand(User.COMMAND c){
+  public void setSnakeCommand(User.COMMAND c){
     if (c==User.COMMAND.LEFT && !moveRight) {
     	moveLeft=true;
     	moveRight=false;
@@ -238,43 +203,42 @@ public class Engine implements EngineService, RequireDataService{
   }
   
   @Override
-  public void releaseHeroesCommand(User.COMMAND c){
+  public void releaseSnakeCommand(User.COMMAND c){
     /*if (c==User.COMMAND.LEFT) moveLeft=false;
     if (c==User.COMMAND.RIGHT) moveRight=false;
     if (c==User.COMMAND.UP) moveUp=false;
     if (c==User.COMMAND.DOWN) moveDown=false;*/
   }
 
-  private void updateSpeedHeroes(){
-    heroesVX*=friction;
-    heroesVY*=friction;
+  private void updateSpeedSnake(){
+    snakeVX*=friction;
+    snakeVY*=friction;
   }
 
-  private void updateCommandHeroes(){
-    if (moveLeft) {heroesVX=-heroesStep;heroesVY=0; }
-    if (moveRight) { heroesVX=heroesStep;heroesVY=0; }
-    if (moveUp) { heroesVY=-heroesStep;heroesVX=0; }
-    if (moveDown) {heroesVY=heroesStep;heroesVX=0; }
+  private void updateCommandSnake(){
+    if (moveLeft) {snakeVX=-snakeStep;snakeVY=0; }
+    if (moveRight) { snakeVX=snakeStep;snakeVY=0; }
+    if (moveUp) { snakeVY=-snakeStep;snakeVX=0; }
+    if (moveDown) {snakeVY=snakeStep;snakeVX=0; }
   }
   
   private void updatePositionHeroes(){
 	SnakeService snakeHead = snakeParts.get(0);
-	Position p = new Position(snakeHead.getPosition().x+heroesVX,snakeHead.getPosition().y+heroesVY);
+	Position p = new Position(snakeHead.getPosition().x+snakeVX,snakeHead.getPosition().y+snakeVY);
 	snakeParts.set(0,new SnakePart(p));
     data.getSnakeParts().set(0, new SnakePart(p));
-    if (snakeHead.getPosition().x<0) snakeParts.set(0,new SnakePart(new Position(HardCodedParameters.defaultWidth+(heroesVX), snakeHead.getPosition().y)));
+    if (snakeHead.getPosition().x<0) snakeParts.set(0,new SnakePart(new Position(HardCodedParameters.defaultWidth+(snakeVX), snakeHead.getPosition().y)));
     if (snakeHead.getPosition().y<0) snakeParts.set(0,new SnakePart(new Position(snakeHead.getPosition().x,HardCodedParameters.defaultHeight*.7
     		)));
-    if (snakeHead.getPosition().x>HardCodedParameters.defaultWidth-(heroesVX*2)) snakeParts.set(0,new SnakePart(new Position(0,snakeHead.getPosition().y)));
+    if (snakeHead.getPosition().x>HardCodedParameters.defaultWidth-(snakeVX*2)) snakeParts.set(0,new SnakePart(new Position(0,snakeHead.getPosition().y)));
     if (snakeHead.getPosition().y>HardCodedParameters.defaultHeight*.7) snakeParts.set(0,new SnakePart(new Position(snakeHead.getPosition().x,0)));
   
   }
 
   private void addNewPart() {
 	  
-	  SnakeService lastSnakePart = snakeParts.get((snakeParts.size() -1));
 	  SnakeService snakeHead = snakeParts.get(0);
-	  Position p = new Position(snakeHead.getPosition().x+heroesVX, snakeHead.getPosition().y+heroesVY);
+	  Position p = new Position(snakeHead.getPosition().x+snakeVX, snakeHead.getPosition().y+snakeVY);
 	  snakeParts.add(new SnakePart(p));
   }
   
@@ -293,22 +257,6 @@ public class Engine implements EngineService, RequireDataService{
 	  
 	  updatePositionHeroes(); 
   }
-  
-  
-  private void spawnPhantom(){
-    int x=(int)(HardCodedParameters.defaultWidth*.9);
-    int y=0;
-    boolean cont=true;
-    while (cont) {
-      y=(int)(gen.nextInt((int)(HardCodedParameters.defaultHeight*.6))+HardCodedParameters.defaultHeight*.1);
-      cont=false;
-      for (PhantomService p:data.getPhantoms()){
-        if (p.getPosition().equals(new Position(x,y))) cont=true;
-      }
-    }
-    data.addPhantom(new Position(x,y));
-  }
-  
   
   private void createWall() {
 	    int x=180;
@@ -406,35 +354,11 @@ public class Engine implements EngineService, RequireDataService{
 	    data.addPoisonousApple(new Position(x,y));
 	  }
 
-  private void moveLeft(PhantomService p){	
-	  p.setPosition(new Position(p.getPosition().x-phantomStep,p.getPosition().y));
-  }
-
-  private void moveRight(PhantomService p){
-	  p.setPosition(new Position(p.getPosition().x+phantomStep,p.getPosition().y));
-  }
-
-  private void moveUp(PhantomService p){
-	  p.setPosition(new Position(p.getPosition().x,p.getPosition().y-phantomStep));
-  }
-
-  private void moveDown(PhantomService p){
-	  p.setPosition(new Position(p.getPosition().x,p.getPosition().y+phantomStep));
-  }
-
-  private boolean collisionHeroesPhantom(PhantomService p){
-    return (
-      (data.getHeroesPosition().x-p.getPosition().x)*(data.getHeroesPosition().x-p.getPosition().x)+
-      (data.getHeroesPosition().y-p.getPosition().y)*(data.getHeroesPosition().y-p.getPosition().y) <
-      0.25*(data.getHeroesWidth()+data.getPhantomWidth())*(data.getHeroesWidth()+data.getPhantomWidth())
-    );
-  }
-  
   private boolean collisionSnakeApple(AppleService se){
 	    return (
 	      (snakeParts.get(0).getPosition().x-se.getPosition().x)*(snakeParts.get(0).getPosition().x-se.getPosition().x)+
 	      (snakeParts.get(0).getPosition().y-se.getPosition().y)*(snakeParts.get(0).getPosition().y-se.getPosition().y) <
-	      0.25*(data.getHeroesWidth()+data.getAppleWidth())*(data.getHeroesWidth()+data.getAppleWidth())
+	      0.25*(data.getSnakeWidth()+data.getAppleWidth())*(data.getSnakeWidth()+data.getAppleWidth())
 	    );
 	  }
   
@@ -442,7 +366,7 @@ public class Engine implements EngineService, RequireDataService{
 	    return (
 	      (snakeParts.get(0).getPosition().x-wall.getPosition().x)*(snakeParts.get(0).getPosition().x-wall.getPosition().x)+
 	      (snakeParts.get(0).getPosition().y-wall.getPosition().y)*(snakeParts.get(0).getPosition().y-wall.getPosition().y) <
-	      0.25*(data.getHeroesWidth()+data.getAppleWidth())*(data.getHeroesWidth()+data.getAppleWidth())
+	      0.25*(data.getSnakeWidth()+data.getAppleWidth())*(data.getSnakeWidth()+data.getAppleWidth())
 	    );
 	  }
   
@@ -450,7 +374,7 @@ public class Engine implements EngineService, RequireDataService{
 	    return (
 	      (x-se.getPosition().x)*(x-se.getPosition().x)+
 	      (y-se.getPosition().y)*(y-se.getPosition().y) <
-	      0.25*(data.getHeroesWidth()+data.getAppleWidth())*(data.getHeroesWidth()+data.getAppleWidth())
+	      0.25*(data.getSnakeWidth()+data.getAppleWidth())*(data.getSnakeWidth()+data.getAppleWidth())
 	    );
 	  }
 
@@ -458,15 +382,11 @@ public class Engine implements EngineService, RequireDataService{
 	    return (
 	      (snakeParts.get(0).getPosition().x-sp.getPosition().x)*(snakeParts.get(0).getPosition().x-sp.getPosition().x)+
 	      (snakeParts.get(0).getPosition().y-sp.getPosition().y)*(snakeParts.get(0).getPosition().y-sp.getPosition().y) <
-	      0.25*(data.getHeroesWidth()+data.getHeroesWidth())*(data.getHeroesWidth()+data.getHeroesWidth())
+	      0.25*(data.getSnakeWidth()+data.getSnakeWidth())*(data.getSnakeWidth()+data.getSnakeWidth())
 	    );
 	  }
   
-  
-  private boolean collisionHeroesPhantoms(){
-    for (PhantomService p:data.getPhantoms()) if (collisionHeroesPhantom(p)) return true; return false;
-  }
-  
+
   private boolean collisionHeroesApples(){
 	    for (AppleService se:data.getApples()) if (collisionSnakeApple(se)) return true; return false;
 	  }
