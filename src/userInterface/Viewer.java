@@ -7,11 +7,13 @@
 package userInterface;
 
 import tools.HardCodedParameters;
-
+import tools.Position;
 import specifications.ViewerService;
 import specifications.ReadService;
 import specifications.RequireReadService;
+import specifications.SnakeService;
 import specifications.AppleService;
+import specifications.ObstacleService;
 import specifications.PhantomService;
 
 import javafx.scene.Group;
@@ -27,6 +29,8 @@ import javafx.scene.image.ImageView;
 import javafx.geometry.Rectangle2D;
 
 import java.util.ArrayList;
+
+import data.ia.SnakePart;
 
 public class Viewer implements ViewerService, RequireReadService{
   private static final int spriteSlowDownRate=HardCodedParameters.spriteSlowDownRate;
@@ -96,53 +100,51 @@ public class Viewer implements ViewerService, RequireReadService{
     yModifier=.01*shrink*defaultMainHeight;
 
     //Yucky hard-conding
-    Rectangle map = new Rectangle(-2*xModifier+shrink*defaultMainWidth,
-                                  -.2*shrink*defaultMainHeight+shrink*defaultMainHeight);
+    Rectangle map = new Rectangle(-2+shrink*defaultMainWidth,-.2*shrink*defaultMainHeight+shrink*defaultMainHeight);
     map.setFill(Color.WHITE);
     map.setStroke(Color.DIMGRAY);
     map.setStrokeWidth(.01*shrink*defaultMainHeight);
-    map.setArcWidth(.04*shrink*defaultMainHeight);
+//    map.setArcWidth(.04*shrink*defaultMainHeight);
     map.setArcHeight(.04*shrink*defaultMainHeight);
     map.setTranslateX(xModifier);
     map.setTranslateY(yModifier);
-    
-    Text greets = new Text(-0.1*shrink*defaultMainHeight+.5*shrink*defaultMainWidth,
-                           -0.1*shrink*defaultMainWidth+shrink*defaultMainHeight,
-                           "Round 1");
-    greets.setFont(new Font(.05*shrink*defaultMainHeight));
     
     Text score = new Text(-0.1*shrink*defaultMainHeight+.5*shrink*defaultMainWidth,
                            -0.05*shrink*defaultMainWidth+shrink*defaultMainHeight,
                            "Score: "+data.getScore());
     score.setFont(new Font(.05*shrink*defaultMainHeight));
-    
-    int index=heroesAvatarViewportIndex/spriteSlowDownRate;
-    heroesScale=data.getHeroesHeight()*shrink/heroesAvatarViewports.get(index).getHeight();
-    heroesAvatar.setViewport(heroesAvatarViewports.get(index));
-    heroesAvatar.setFitHeight(data.getHeroesHeight()*shrink);
-    heroesAvatar.setPreserveRatio(true);
-    heroesAvatar.setTranslateX(shrink*data.getHeroesPosition().x+
-                               shrink*xModifier+
-                               -heroesScale*0.5*heroesAvatarViewports.get(index).getWidth()+
-                               shrink*heroesScale*heroesAvatarXModifiers.get(index)
-                              );
-    heroesAvatar.setTranslateY(shrink*data.getHeroesPosition().y+
-                               shrink*yModifier+
-                               -heroesScale*0.5*heroesAvatarViewports.get(index).getHeight()+
-                               shrink*heroesScale*heroesAvatarYModifiers.get(index)
-                              );
-    heroesAvatarViewportIndex=(heroesAvatarViewportIndex+1)%(heroesAvatarViewports.size()*spriteSlowDownRate);
 
+    Text level = new Text(-0.1*shrink*defaultMainHeight+.5*shrink*defaultMainWidth,
+            -0.1*shrink*defaultMainWidth+shrink*defaultMainHeight,
+            "Round: "+data.getRound());
+    level.setFont(new Font(.05*shrink*defaultMainHeight));
+    
+    Text snakePartsCount = new Text(0.2*shrink*defaultMainHeight+.5*shrink*defaultMainWidth,
+            -0.08*shrink*defaultMainWidth+shrink*defaultMainHeight,
+            "Snake Parts Count: "+data.getSnakeParts().size());
+    snakePartsCount.setFont(new Font(.05*shrink*defaultMainHeight));
+    
+    
     Group panel = new Group();
-    panel.getChildren().addAll(map,greets,score,heroesAvatar);
+    panel.getChildren().addAll(map,score,level,snakePartsCount);
 
     ArrayList<PhantomService> phantoms = data.getPhantoms();
     PhantomService p;
     
     ArrayList<AppleService> apples = data.getApples();
-    AppleService se;
+    AppleService apl;
+    
+    ArrayList<AppleService> poisonousApples = data.getPoisonousApples();
+    AppleService poisApl;
+    
+    AppleService healthyApples = data.getHealthyApples();
 
-    for (int i=0; i<phantoms.size();i++){
+    ArrayList<SnakeService> snakeParts = data.getSnakeParts();
+    SnakeService sp;
+    
+    ArrayList<ObstacleService> walls = data.getWalls();
+    ObstacleService wall;
+    /*for (int i=0; i<phantoms.size();i++){
       p=phantoms.get(i);
       double radius=.5*Math.min(shrink*data.getPhantomWidth(),shrink*data.getPhantomHeight());
       Circle phantomAvatar = new Circle(radius,Color.rgb(255,156,156));
@@ -150,17 +152,75 @@ public class Viewer implements ViewerService, RequireReadService{
       phantomAvatar.setTranslateX(shrink*p.getPosition().x+shrink*xModifier-radius);
       phantomAvatar.setTranslateY(shrink*p.getPosition().y+shrink*yModifier-radius);
       panel.getChildren().add(phantomAvatar);
-    }
+    }*/
+    
+    for (SnakeService snakeService : snakeParts) {
+		sp = snakeService;
+		Rectangle snakeAvatar =  new Rectangle(data.getHeroesWidth()*shrink,data.getHeroesHeight()*shrink,Color.DARKGREEN);
+	    snakeAvatar.setTranslateX(shrink*sp.getPosition().x+
+                shrink*xModifier+
+                heroesScale*data.getHeroesWidth()
+               );
+	    snakeAvatar.setTranslateY(shrink*sp.getPosition().y+
+                shrink*yModifier+
+                heroesScale*data.getHeroesHeight()
+               );
+	      panel.getChildren().add(snakeAvatar);
+
+	}
+    for (int i=0; i<walls.size();i++){
+		wall = walls.get(i);
+		Rectangle wallAvatar =  new Rectangle(data.getHeroesWidth()*shrink,data.getHeroesHeight()*shrink,Color.rgb(150, 75, 0));
+	    wallAvatar.setTranslateX(shrink*wall.getPosition().x+
+                shrink*xModifier+
+                heroesScale*data.getHeroesWidth()
+               );
+	    wallAvatar.setTranslateY(shrink*wall.getPosition().y+
+                shrink*yModifier+
+                heroesScale*data.getHeroesHeight()
+               );
+	      panel.getChildren().add(wallAvatar);
+
+	}
     
     for (int i=0; i<apples.size();i++){
-        se=apples.get(i);
-        double radius=.5*Math.min(shrink*data.getAppleWidth(),shrink*data.getAppleHeight());
+        apl=apples.get(i);
+        double radius=.5*Math.min(data.getAppleWidth(),data.getAppleHeight());
         Circle appleAvatar = new Circle(radius,Color.rgb(255,0,0));
         appleAvatar.setEffect(new Lighting());
-        appleAvatar.setTranslateX(shrink*se.getPosition().x+shrink*xModifier-radius);
-        appleAvatar.setTranslateY(shrink*se.getPosition().y+shrink*yModifier-radius);
+        appleAvatar.setTranslateX(shrink*apl.getPosition().x+shrink*xModifier+radius);
+        appleAvatar.setTranslateY(shrink*apl.getPosition().y+shrink*yModifier+radius);
         panel.getChildren().add(appleAvatar);
+        
       }
+
+    for (int i=0; i<poisonousApples.size();i++){
+        poisApl=poisonousApples.get(i);
+        double radius=.5*Math.min(data.getAppleWidth(),data.getAppleHeight());
+        Circle appleAvatar = new Circle(radius,Color.rgb(128,0,128));
+        appleAvatar.setEffect(new Lighting());
+        appleAvatar.setTranslateX(shrink*poisApl.getPosition().x+shrink*xModifier+radius);
+        appleAvatar.setTranslateY(shrink*poisApl.getPosition().y+shrink*yModifier+radius);
+        panel.getChildren().add(appleAvatar);
+        
+      }
+    
+//    	if(healthyApples!=null) {
+//        healthyApples=data.getHealthyApples();
+//        double radius=.5*Math.min(data.getAppleWidth(),data.getAppleHeight());
+//        Circle appleAvatar = new Circle(radius,Color.rgb(0,255,0));
+//        appleAvatar.setEffect(new Lighting());
+//        appleAvatar.setTranslateX(shrink*healthyApples.getPosition().x+shrink*xModifier+radius);
+//        appleAvatar.setTranslateY(shrink*healthyApples.getPosition().y+shrink*yModifier+radius);
+//        panel.getChildren().add(appleAvatar);    
+//    	}
+    
+    if(!data.getRunning()) {
+    	Text endGame = new Text(defaultMainHeight*.2,defaultMainWidth*.2,
+                "GAME OVER !");
+        endGame.setFont(new Font(100));
+        panel.getChildren().add(endGame);
+    }
 
     return panel;
   }

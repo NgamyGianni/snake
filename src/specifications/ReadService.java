@@ -21,7 +21,13 @@ public interface ReadService {
   public double getAppleHeight();
   public int getStepNumber();
   public int getScore();
+  public boolean getRunning();
+  public int getRound();
+  public ArrayList<SnakeService> getSnakeParts();
+  public ArrayList<ObstacleService> getWalls();
   public ArrayList<PhantomService> getPhantoms();
   public ArrayList<AppleService> getApples();
+  public ArrayList<AppleService> getPoisonousApples();
+  public AppleService getHealthyApples();
   public Sound.SOUND getSoundEffect();
 }
